@@ -41,3 +41,6 @@ bld/
 msbuild.log
 msbuild.err
 msbuild.wrn
+
+# Build results
+/backend/api/Properties/launchSettings.json

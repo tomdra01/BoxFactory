@@ -8,9 +8,17 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Dapper" Version="2.0.151" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0-preview.7.23375.9"/>
+        <PackageReference Include="Npgsql" Version="8.0.0-preview.4" />
+        <PackageReference Include="Npgsql.DependencyInjection" Version="7.0.6" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
     </ItemGroup>
 
+
+    <ItemGroup>
+      <ProjectReference Include="..\infrastructure\infrastructure.csproj" />
+      <ProjectReference Include="..\service\service.csproj" />
+    </ItemGroup>
 
 </Project>
