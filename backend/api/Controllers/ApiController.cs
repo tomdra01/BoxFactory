@@ -20,6 +20,18 @@ namespace FullBackendTestProject.Controllers
         {
             return _service.GetAllBoxes();
         }
+        
+        [HttpGet]
+        [Route("/api/box/{boxId}")]
+        public ActionResult<Box> GetBoxById([FromRoute] int boxId)
+        {
+            Box box = _service.GetBoxById(boxId);
+            if (box == null)
+            {
+                return NotFound("Box not found");
+            }
+            return Ok(box);
+        }
 
         [HttpPost]
         [Route("/api/box")]
