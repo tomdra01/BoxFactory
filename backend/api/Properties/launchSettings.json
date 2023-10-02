@@ -17,7 +17,7 @@
       "applicationUrl": "http://localhost:5121",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "bvwaxjdi" : "postgres://ivkuhpbt:YK-HPdabdqBenUDZNdxgDZrBd__a8-t9@snuffleupagus.db.elephantsql.com/ivkuhpbt"
+        "bvwaxjdi" : "postgres://ivkuhpbt:Pld0r8zoOLl1gRRmEavDZemtqmO6PAjJ@snuffleupagus.db.elephantsql.com/ivkuhpbt"
 
       }
     },
