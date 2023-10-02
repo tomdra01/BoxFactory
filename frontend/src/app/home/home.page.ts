@@ -8,7 +8,8 @@ import {environment} from "../../environments/environment";
 @Component({
   selector: 'app-home',
   template: `
-    <ion-content>
+    <ion-content class="custom-background">
+      <div class="custom-background">
       <ion-grid>
         <ion-card *ngFor="let box of state.boxes">
           <ion-toolbar>
@@ -17,8 +18,10 @@ import {environment} from "../../environments/environment";
           </ion-toolbar>
         </ion-card>
       </ion-grid>
+      </div>
     </ion-content>
   `,
+  styleUrls: ['home.component.scss'],
 })
 export class HomePage implements OnInit{
   constructor(public http: HttpClient, public state: State) {}

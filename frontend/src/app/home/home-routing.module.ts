@@ -14,4 +14,7 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes), HttpClientModule],
   exports: [RouterModule]
 })
-export class HomePageRoutingModule {}
+
+export class HomePageRoutingModule {
+
+}
