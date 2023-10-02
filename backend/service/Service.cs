@@ -26,6 +26,18 @@ namespace Service
                 throw new Exception("Could not get boxes");
             }
         }
+        
+        public Box GetBoxById(int boxId)
+        {
+            try
+            {
+                return _repository.GetBoxById(boxId);
+            }
+            catch (Exception)
+            {
+                throw new Exception("Could not get box by ID");
+            }
+        }
 
         public Box CreateBox(Box box)
         {

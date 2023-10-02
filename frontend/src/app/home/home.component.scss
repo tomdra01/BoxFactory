@@ -4,3 +4,28 @@
   background-size: cover;
   background-position: center;
 }
+
+.narrow-card {
+  max-width: 400px;
+  margin-right: auto;
+}
+
+.toolbar-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.home-button, .add-button {
+  margin-left: 10px;
+}
+
+.search-bar {
+  width: 30%;
+  height: 75%;
+  margin-right: -800px;
+}
+
+.search-button {
+  margin-right: 10px;
+}

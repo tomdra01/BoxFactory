@@ -21,6 +21,15 @@ namespace Infrastructure
                 return conn.Query<Box>(sql);
             }
         }
+        
+        public Box GetBoxById(int boxId)
+        {
+            const string sql = "SELECT * FROM boxes WHERE boxid = @BoxId;";
+            using (var conn = _dataSource.OpenConnection())
+            {
+                return conn.QuerySingleOrDefault<Box>(sql, new { BoxId = boxId });
+            }
+        }
 
         public Box CreateBox(Box box)
         {
