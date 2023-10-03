@@ -9,20 +9,28 @@ import {environment} from "../../environments/environment";
   selector: 'app-home',
   template: `
     <ion-header>
-      <ion-toolbar>
+      <ion-toolbar class="toolbar-content">
         <div class="toolbar-content">
           <div class="left-buttons">
             <ion-button class="home-button" routerLink="/">Home</ion-button>
             <ion-button class="add-button">ADD</ion-button>
           </div>
-          <ion-searchbar class="search-bar" placeholder="Search" (ionInput)="searchBox($event)"></ion-searchbar>          <ion-buttons slot="end">
+          <ion-searchbar class="search-bar" placeholder="Search" (ionInput)="searchBox($event)"></ion-searchbar>
+          <ion-buttons slot="end">
           </ion-buttons>
         </div>
       </ion-toolbar>
     </ion-header>
 
-    <ion-content class="custom-background">
-      <div class="custom-background">
+    <ion-content>
+      <div class="cloud-element"></div>
+      <div class="parent">
+        <ion-grid class="grid">
+          <ion-button class="center-button" (click)="scrollToTarget()">See boxes</ion-button>
+        </ion-grid>
+      </div>
+
+      <div id="scrollTarget" class="page">
         <ion-grid>
           <ion-card class="narrow-card" *ngFor="let box of searchedBoxes">
             <ion-toolbar>
@@ -39,27 +47,40 @@ import {environment} from "../../environments/environment";
         </ion-grid>
       </div>
     </ion-content>
-
   `,
   styleUrls: ['home.component.scss'],
 })
-export class HomePage implements OnInit{
+
+export class HomePage implements OnInit {
   public searchResult: Box | null = null;
   public searchedBoxes: Box[] = [];
-  constructor(public http: HttpClient, public state: State) {}
 
-  async fetchBoxes() {
+  constructor(private http: HttpClient, private state: State) {}
+
+  async ngOnInit(): Promise<void> {
+    await this.fetchBoxes();
+    this.searchedBoxes = [...this.state.boxes];
+  }
+
+  async fetchBoxes(): Promise<void> {
     try {
-      const result = await firstValueFrom(this.http.get<Box[]>(`${environment.baseUrl}/api/boxes`));
-      console.log('Fetched Boxes:', result);
-      this.state.boxes = result;
+      const boxes = await firstValueFrom(this.http.get<Box[]>(`${environment.baseUrl}/api/boxes`));
+      console.log('Fetched Boxes:', boxes);
+      this.state.boxes = boxes;
       console.log('State Boxes:', this.state.boxes);
     } catch (error) {
       console.error('Error fetching boxes:', error);
     }
   }
 
-  async deleteBox(boxId?: number) {
+  scrollToTarget(): void {
+    const targetElement = document.getElementById('scrollTarget');
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  async deleteBox(boxId?: number): Promise<void> {
     if (boxId === undefined) {
       console.error('Cannot delete box with undefined ID');
       return;
@@ -69,14 +90,13 @@ export class HomePage implements OnInit{
       await firstValueFrom(this.http.delete(`${environment.baseUrl}/api/box/${boxId}`));
       console.log(`Deleted box with ID: ${boxId}`);
 
-      // Optional: Refresh the state or remove the box from the local array
       this.state.boxes = this.state.boxes.filter(box => box.boxId !== boxId);
     } catch (error) {
       console.error(`Error deleting box with ID ${boxId}:`, error);
     }
   }
 
-  async searchBox(event: Event) {
+  async searchBox(event: Event): Promise<void> {
     const target = event.target as HTMLInputElement;
     if (target && target.value) {
       const boxId = Number(target.value);
@@ -92,11 +112,5 @@ export class HomePage implements OnInit{
     } else {
       this.searchedBoxes = [...this.state.boxes];
     }
-  }
-
-  ngOnInit(): void {
-    this.fetchBoxes().then(() => {
-      this.searchedBoxes = [...this.state.boxes];
-    });
   }
 }
