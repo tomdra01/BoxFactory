@@ -15,7 +15,6 @@ import {environment} from "../../environments/environment";
             <ion-button class="home-button" routerLink="/">Home</ion-button>
             <ion-button class="add-button">ADD</ion-button>
           </div>
-          <ion-searchbar class="search-bar" placeholder="Search" (ionInput)="searchBox($event)"></ion-searchbar>
           <ion-buttons slot="end">
           </ion-buttons>
         </div>
@@ -32,7 +31,8 @@ import {environment} from "../../environments/environment";
 
       <div id="scrollTarget" class="page">
         <ion-grid>
-          <ion-card class="narrow-card" *ngFor="let box of searchedBoxes">
+          <!-- Changed here from searchedBoxes to state.boxes -->
+          <ion-card class="narrow-card" *ngFor="let box of state.boxes">
             <ion-toolbar>
               <ion-card-header>Box Id: {{box.boxId}}</ion-card-header>
               <ion-card-subtitle>Box price: {{box.price}}</ion-card-subtitle>
@@ -52,22 +52,16 @@ import {environment} from "../../environments/environment";
 })
 
 export class HomePage implements OnInit {
-  public searchResult: Box | null = null;
-  public searchedBoxes: Box[] = [];
-
-  constructor(private http: HttpClient, private state: State) {}
+  constructor(private http: HttpClient, public state: State) {} // Made state public
 
   async ngOnInit(): Promise<void> {
     await this.fetchBoxes();
-    this.searchedBoxes = [...this.state.boxes];
   }
 
   async fetchBoxes(): Promise<void> {
     try {
       const boxes = await firstValueFrom(this.http.get<Box[]>(`${environment.baseUrl}/api/boxes`));
-      console.log('Fetched Boxes:', boxes);
       this.state.boxes = boxes;
-      console.log('State Boxes:', this.state.boxes);
     } catch (error) {
       console.error('Error fetching boxes:', error);
     }
@@ -88,29 +82,9 @@ export class HomePage implements OnInit {
 
     try {
       await firstValueFrom(this.http.delete(`${environment.baseUrl}/api/box/${boxId}`));
-      console.log(`Deleted box with ID: ${boxId}`);
-
       this.state.boxes = this.state.boxes.filter(box => box.boxId !== boxId);
     } catch (error) {
       console.error(`Error deleting box with ID ${boxId}:`, error);
-    }
-  }
-
-  async searchBox(event: Event): Promise<void> {
-    const target = event.target as HTMLInputElement;
-    if (target && target.value) {
-      const boxId = Number(target.value);
-      if (!Number.isNaN(boxId)) {
-        try {
-          const result = await firstValueFrom(this.http.get<Box>(`${environment.baseUrl}/api/box/${boxId}`));
-          this.searchedBoxes = [result];
-        } catch (error) {
-          console.info(`Error fetching box with ID ${boxId}:`, error);
-          this.searchedBoxes = [];
-        }
-      }
-    } else {
-      this.searchedBoxes = [...this.state.boxes];
     }
   }
 }
