@@ -12,8 +12,8 @@ import {environment} from "../../environments/environment";
       <ion-toolbar class="toolbar-content">
         <div class="toolbar-content">
           <div class="left-buttons">
-            <ion-button class="home-button" routerLink="/">Home</ion-button>
-            <ion-button class="add-button">ADD</ion-button>
+            <ion-button class="home-button" color="dark" routerLink="/">Home</ion-button>
+            <ion-button class="add-button" color="dark" [routerLink]="['/add']">ADD</ion-button>
           </div>
           <ion-buttons slot="end">
           </ion-buttons>
@@ -21,17 +21,15 @@ import {environment} from "../../environments/environment";
       </ion-toolbar>
     </ion-header>
 
-    <ion-content>
-      <div class="cloud-element"></div>
+    <ion-content fullscreen="true">
       <div class="parent">
         <ion-grid class="grid">
-          <ion-button class="center-button" (click)="scrollToTarget()">See boxes</ion-button>
+          <ion-button class="center-button" color="dark" (click)="scrollToTarget()">See boxes</ion-button>
         </ion-grid>
       </div>
 
       <div id="scrollTarget" class="page">
         <ion-grid>
-          <!-- Changed here from searchedBoxes to state.boxes -->
           <ion-card class="narrow-card" *ngFor="let box of state.boxes">
             <ion-toolbar>
               <ion-card-header>Box Id: {{box.boxId}}</ion-card-header>
@@ -52,7 +50,7 @@ import {environment} from "../../environments/environment";
 })
 
 export class HomePage implements OnInit {
-  constructor(private http: HttpClient, public state: State) {} // Made state public
+  constructor(private http: HttpClient, public state: State) {}
 
   async ngOnInit(): Promise<void> {
     await this.fetchBoxes();
