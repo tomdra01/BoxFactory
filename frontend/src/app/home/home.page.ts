@@ -39,6 +39,9 @@ import {environment} from "../../environments/environment";
                 <ion-button (click)="deleteBox(box.boxId)">
                   <ion-icon name="trash"></ion-icon>
                 </ion-button>
+                <ion-button [routerLink]="['/inspect', box.boxId]" *ngIf="box.boxId !== undefined">
+                  <ion-icon name="eye-outline"></ion-icon>
+                </ion-button>
               </ion-buttons>
             </ion-toolbar>
           </ion-card>
@@ -84,5 +87,22 @@ export class HomePage implements OnInit {
     } catch (error) {
       console.error(`Error deleting box with ID ${boxId}:`, error);
     }
+  }
+
+  viewBox(boxId: string) {
+    this.http.get(`${environment.baseUrl}/api/box/${boxId}`).subscribe({
+      next: (data: any) => {
+        // Process the received box data
+        console.log('Received box data:', data);
+      },
+      error: (error) => {
+        // Handle errors
+        console.error('An error occurred:', error);
+      },
+      complete: () => {
+        // Optional: Code to run once the Observable is complete
+        console.log('Request completed.');
+      },
+    });
   }
 }
