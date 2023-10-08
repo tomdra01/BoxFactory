@@ -43,23 +43,49 @@ export class AddBoxComponent {
   constructor(private http: HttpClient, public state: State) {}
 
   async addBox(): Promise<void> {
-    const boxData = {
-      size: this.selectedSize,
-      price: this.price || 0,
-    };
+    if (this.validateData()) {
+      const boxData = {
+        size: this.selectedSize,
+        price: this.price || 0,
+      };
 
-    try {
-      const newBox = await firstValueFrom(this.http.post<Box>(
-        `${environment.baseUrl}/api/box`,
-        boxData
-      ));
+      try {
+        const newBox = await firstValueFrom(this.http.post<Box>(
+          `${environment.baseUrl}/api/box`,
+          boxData
+        ));
 
-      this.state.boxes.push(newBox);
+        this.state.boxes.push(newBox);
 
-      this.selectedSize = 'M';
-      this.price = null;
-    } catch (error) {
-      console.error('Error adding box:', error);
+        this.selectedSize = 'M';
+        this.price = null;
+      } catch (error) {
+        console.error('Error adding box:', error);
+      }
     }
   }
+
+  private validateData(): boolean {
+    if (!this.boxSizes.includes(this.selectedSize)) {
+      console.error('Invalid box size selected');
+      return false;
+    }
+
+    if (typeof this.price !== 'number' || isNaN(this.price) || this.price < 0) {
+      console.error('Invalid price value');
+      return false;
+    }
+
+    if (this.selectedSize === null || this.selectedSize === undefined) {
+      console.error('Selected size is null or undefined');
+      return false;
+    }
+
+    if (this.price === null || this.price === undefined) {
+      console.error('Price is null or undefined');
+      return false;
+    }
+    return true;
+  }
 }
+

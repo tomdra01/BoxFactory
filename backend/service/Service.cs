@@ -41,7 +41,28 @@ namespace Service
 
         public Box CreateBox(Box box)
         {
+            if (box == null)
+            {
+                throw new ArgumentNullException(nameof(box), "Box data is null");
+            }
+
+            if (string.IsNullOrEmpty(box.Size) || !IsValidSize(box.Size))
+            {
+                throw new ArgumentException("Invalid box size", nameof(box.Size));
+            }
+
+            if (box.Price < 0)
+            {
+                throw new ArgumentException("Price must be a non-negative value", nameof(box.Price));
+            }
+
             return _repository.CreateBox(box);
+        }
+
+        private static bool IsValidSize(string size)
+        {
+            var validSizes = new List<string> { "S", "M", "L", "XL", "XXL" };
+            return validSizes.Contains(size);
         }
 
         public Box UpdateBox(int boxId, Box box)
