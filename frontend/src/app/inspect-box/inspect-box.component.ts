@@ -17,7 +17,9 @@ import {environment} from "../../environments/environment";
           <span *ngIf="!editing">Box Price: {{ box?.price }}</span>
         </ion-card-subtitle>
         <ion-card-subtitle>
-          <ion-input *ngIf="editing" [(ngModel)]="box.size"></ion-input>
+          <ion-select *ngIf="editing" [(ngModel)]="box.size">
+            <ion-select-option *ngFor="let size of boxSizes" [value]="size">{{ size }}</ion-select-option>
+          </ion-select>
           <span *ngIf="!editing">Box Size: {{ box?.size }}</span>
         </ion-card-subtitle>
         <ion-buttons slot="end">
@@ -41,6 +43,7 @@ import {environment} from "../../environments/environment";
 export class InspectBoxComponent implements OnInit {
   box: any;
   editing: boolean = false;
+  boxSizes: string[] = ['S', 'M', 'L', 'XL', 'XXL'];
 
   constructor(private route: ActivatedRoute, private http: HttpClient) { }
 
