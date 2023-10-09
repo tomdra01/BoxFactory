@@ -28,26 +28,49 @@ import {environment} from "../../environments/environment";
         </ion-grid>
       </div>
 
+      <!-- Line with cards for different box sizes -->
+      <div id="sizeCards" class="page">
+        <ion-grid>
+          <ion-row>
+            <ion-col *ngFor="let size of ['S', 'M', 'L', 'XL', 'XXL']">
+              <ion-card>
+                <ion-card-header>
+                  {{size}} Size
+                </ion-card-header>
+                <ion-card-subtitle>Stock: {{ getStockCount(size) }}</ion-card-subtitle>
+                <ion-card-subtitle>Average Price: {{ getAveragePrice(size) }}</ion-card-subtitle>
+                <ion-card-subtitle>Lowest Price: {{ getLowestPrice(size) }}</ion-card-subtitle>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+
       <div id="scrollTarget" class="page">
         <ion-grid>
-          <ion-card class="narrow-card" *ngFor="let box of state.boxes">
-            <ion-toolbar>
-              <ion-card-header>Box Id: {{box.boxId}}</ion-card-header>
-              <ion-card-subtitle>Box price: {{box.price}}</ion-card-subtitle>
-              <ion-card-subtitle>Box size: {{box.size}}</ion-card-subtitle>
-              <ion-buttons slot="end">
-                <ion-button (click)="deleteBox(box.boxId)">
-                  <ion-icon name="trash"></ion-icon>
-                </ion-button>
-                <ion-button [routerLink]="['/inspect', box.boxId]" *ngIf="box.boxId !== undefined">
-                  <ion-icon name="eye-outline"></ion-icon>
-                </ion-button>
-              </ion-buttons>
-            </ion-toolbar>
-          </ion-card>
+          <ion-row>
+            <ion-col size="4" *ngFor="let box of state.boxes">
+              <ion-card class="narrow-card">
+                <ion-toolbar>
+                  <ion-card-header>Box Id: {{box.boxId}}</ion-card-header>
+                  <ion-card-subtitle>Box price: {{box.price}}</ion-card-subtitle>
+                  <ion-card-subtitle>Box size: {{box.size}}</ion-card-subtitle>
+                  <ion-buttons slot="end">
+                    <ion-button (click)="deleteBox(box.boxId)">
+                      <ion-icon name="trash"></ion-icon>
+                    </ion-button>
+                    <ion-button [routerLink]="['/inspect', box.boxId]" *ngIf="box.boxId !== undefined">
+                      <ion-icon name="eye-outline"></ion-icon>
+                    </ion-button>
+                  </ion-buttons>
+                </ion-toolbar>
+              </ion-card>
+            </ion-col>
+          </ion-row>
         </ion-grid>
       </div>
     </ion-content>
+
   `,
   styleUrls: ['home.component.scss'],
 })
@@ -104,5 +127,25 @@ export class HomePage implements OnInit {
         console.log('Request completed.');
       },
     });
+  }
+
+  getStockCount(size: string): number {
+    return this.state.boxes.filter(box => box.size?.toString() === size).length;
+  }
+
+  getAveragePrice(size: string): number | string {
+    const boxesOfSize = this.state.boxes.filter(box => box.size !== undefined && box.size.toString() === size && box.price !== undefined);
+    if (boxesOfSize.length === 0) return 'N/A';
+
+    const sum = boxesOfSize.reduce((acc, box) => acc + (box.price || 0), 0);  // box.price || 0 ensures it falls back to 0 if undefined
+    return (sum / boxesOfSize.length).toFixed(2);
+  }
+
+  getLowestPrice(size: string): number | string {
+    const boxesOfSize = this.state.boxes.filter(box => box.size !== undefined && box.size.toString() === size && box.price !== undefined);
+    if (boxesOfSize.length === 0) return 'N/A';
+
+    const lowest = Math.min(...boxesOfSize.map(box => box.price || Infinity));  // box.price || Infinity ensures it falls back to Infinity if undefined
+    return lowest.toFixed(2);
   }
 }
