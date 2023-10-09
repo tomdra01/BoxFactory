@@ -48,21 +48,25 @@ import {environment} from "../../environments/environment";
 
       <div id="scrollTarget" class="page">
         <ion-grid>
-          <ion-card class="narrow-card" *ngFor="let box of state.boxes">
-            <ion-toolbar>
-              <ion-card-header>Box Id: {{box.boxId}}</ion-card-header>
-              <ion-card-subtitle>Box price: {{box.price}}</ion-card-subtitle>
-              <ion-card-subtitle>Box size: {{box.size}}</ion-card-subtitle>
-              <ion-buttons slot="end">
-                <ion-button (click)="deleteBox(box.boxId)">
-                  <ion-icon name="trash"></ion-icon>
-                </ion-button>
-                <ion-button [routerLink]="['/inspect', box.boxId]" *ngIf="box.boxId !== undefined">
-                  <ion-icon name="eye-outline"></ion-icon>
-                </ion-button>
-              </ion-buttons>
-            </ion-toolbar>
-          </ion-card>
+          <ion-row>
+            <ion-col size="4" *ngFor="let box of state.boxes">
+              <ion-card class="narrow-card">
+                <ion-toolbar>
+                  <ion-card-header>Box Id: {{box.boxId}}</ion-card-header>
+                  <ion-card-subtitle>Box price: {{box.price}}</ion-card-subtitle>
+                  <ion-card-subtitle>Box size: {{box.size}}</ion-card-subtitle>
+                  <ion-buttons slot="end">
+                    <ion-button (click)="deleteBox(box.boxId)">
+                      <ion-icon name="trash"></ion-icon>
+                    </ion-button>
+                    <ion-button [routerLink]="['/inspect', box.boxId]" *ngIf="box.boxId !== undefined">
+                      <ion-icon name="eye-outline"></ion-icon>
+                    </ion-button>
+                  </ion-buttons>
+                </ion-toolbar>
+              </ion-card>
+            </ion-col>
+          </ion-row>
         </ion-grid>
       </div>
     </ion-content>
