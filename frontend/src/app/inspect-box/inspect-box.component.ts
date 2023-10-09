@@ -12,8 +12,10 @@ import {environment} from "../../environments/environment";
         <ion-card-subtitle>Box Price: {{ box?.price }}</ion-card-subtitle>
         <ion-card-subtitle>Box Size: {{ box?.size }}</ion-card-subtitle>
       </ion-toolbar>
+      <img class="box-image" *ngIf="box?.size" [src]="getImagePath()" alt="Box Image">
     </ion-card>
-  `
+  `,
+  styleUrls: ['inspect-box.component.scss']
 })
 export class InspectBoxComponent implements OnInit {
   box: any;
@@ -36,5 +38,18 @@ export class InspectBoxComponent implements OnInit {
         console.error('An error occurred:', error);
       }
     });
+  }
+
+  getImagePath(): string {
+    if (!this.box?.size) return '';
+    const size = this.box.size.toString(); // Convert to string if it's not
+    const mappings: { [key: string]: string } = { // Explicitly define type
+      'XXL': 'boxImgBig.png',
+      'XL': 'boxImgBig.png',
+      'L': 'boxImgLarge.jpg',
+      'M': 'boxImgMedium.jpg',
+      'S': 'boxImgSmall.jpg'
+    };
+    return `/assets/images/${mappings[size] || ''}`;
   }
 }
