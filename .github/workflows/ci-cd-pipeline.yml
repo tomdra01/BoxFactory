@@ -1,45 +1,54 @@
-name: CI/CD Pipeline
+name: Build, Run, and Test
 
-on:
-  push:
-    branches:
-      - main
+on: [push, pull_request]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
+    # Build and run C# project
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '8.0.100-preview.7.23376.3'  # adjust to your .NET version
 
-      - name: Install Dependencies
-        run: npm install
+    - name: Build C# project
+      run: dotnet build ./backend/backend.sln
 
-      - name: Build
-        run: npm run build
+    # Start the server
+    - name: Start Server
+      run: dotnet run --project ./path/to/your/server/project.csproj &
+      # Replace `./path/to/your/server/project.csproj` with the path to your server project
 
-  test:
-    runs-on: ubuntu-latest
+    # Wait for the server to start
+    - name: Wait for server to start
+      run: sleep 10  # waits for 10 seconds
 
-    needs: build
+    # Run Playwright install script
+    - name: Execute Playwright Install Script
+      run: pwsh -File ./backend/test/bin/Debug/net8.0/playwright.ps1 install
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Run C# project tests
+      run: dotnet test ./backend/backend.sln
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
+    # Install Node.js and run Playwright tests
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '9.8.1'  # adjust to your Node.js version
 
-      - name: Install Dependencies
-        run: npm install
+    - name: Install dependencies
+      run: npm install
+      working-directory: ./backend/test
 
-      - name: Run Playwright Tests
-        run: npm test
+    - name: Install Playwright
+      run: npx playwright install
+      working-directory: ./backend/test
+
+    - name: Run Playwright tests
+      run: npm test
+      working-directory: ./backend/test
