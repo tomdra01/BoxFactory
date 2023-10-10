@@ -32,7 +32,9 @@ public class Tests
     [Test]
     public async Task TestAddButtonClick()
     {
-        await _page.ClickAsync(".add-button"); 
+        await _page.ClickAsync(".add-button");
+
+        await _page.WaitForURLAsync("http://localhost:4200/add");
     }
     
     [Test]
