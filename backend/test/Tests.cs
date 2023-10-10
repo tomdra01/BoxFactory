@@ -12,7 +12,7 @@ public class Tests
         _playwright = await Playwright.CreateAsync();
         _browser = await _playwright.Chromium.LaunchAsync();
         _page = await _browser.NewPageAsync();
-        await _page.GotoAsync("http://localhost:4200/home");
+        await _page.GotoAsync("https://2c2f-91-101-59-10.ngrok-free.app/");
     }
 
     [Test]
