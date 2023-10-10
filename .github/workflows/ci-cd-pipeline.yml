@@ -1,45 +1,41 @@
-name: CI/CD Pipeline
+name: Build, Run, and Test
 
-on:
-  push:
-    branches:
-      - main
+on: [push, pull_request]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
+    # Build and run C# project
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '8.0.100-preview.7.23376.3'
 
-      - name: Install Dependencies
-        run: npm install
+    - name: Build C# project
+      run: dotnet build ./backend/backend.sln
 
-      - name: Build
-        run: npm run build
+    - name: Run C# project tests
+      run: dotnet test ./backend/backend.sln
 
-  test:
-    runs-on: ubuntu-latest
+    # Install Playwright and download browsers
+    - name: Install Playwright and download browsers
+      run: npm install playwright && npx playwright install
 
-    needs: build
+    # Install Node.js and run Playwright tests
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Install dependencies
+      run: npm install
+      working-directory: ./backend/test
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Run Playwright Tests
-        run: npm test
+    - name: Run Playwright tests
+      run: npm test
+      working-directory: ./backend/test
