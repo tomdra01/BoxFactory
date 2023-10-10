@@ -57,3 +57,24 @@ ion-toolbar {
   resize: both;
   overflow: auto;
 }
+
+.filter-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+ion-label {
+  display: flex;
+  align-items: center;
+  margin: 5px;
+}
+
+ion-checkbox {
+  --background: grey;
+  --background-checked: blue;
+  --border-color: black;
+  margin-right: 8px;
+}
