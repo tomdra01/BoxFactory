@@ -45,3 +45,15 @@ ion-toolbar {
 .page {
   background: #010103;
 }
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 16px;
+}
+
+.narrow-card {
+  resize: both;
+  overflow: auto;
+}
