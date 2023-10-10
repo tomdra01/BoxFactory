@@ -1,11 +1,6 @@
 # Box factory website
 
-
-
-
-![Logo](<img width="1128" alt="Snímka obrazovky 2023-10-10 o 22 35 46" src="https://github.com/tomdra01/BoxFactory/assets/114875545/1e800e1f-d05f-4798-b752-08d1445e51a5">)
-
-
+<img width="1128" alt="screen" src="https://github.com/tomdra01/BoxFactory/assets/114875545/5982f654-b390-4c95-a1fc-7e5f874632c7">
 
 ## Authors
 
