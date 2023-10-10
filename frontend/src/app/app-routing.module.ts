@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import {AddBoxComponent} from "./add-box/add-box.component";
+import {InspectBoxComponent} from "./inspect-box/inspect-box.component";
 
 const routes: Routes = [
   {
@@ -11,6 +13,14 @@ const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full'
   },
+  {
+    path: 'add',
+    component: AddBoxComponent,
+  },
+  {
+    path: 'inspect/:boxId',
+    component: InspectBoxComponent
+  }
 ];
 
 @NgModule({

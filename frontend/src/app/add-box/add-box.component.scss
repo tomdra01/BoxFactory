@@ -1,0 +1,28 @@
+ion-header {
+  ion-toolbar {
+    --background: transparent;
+    --ion-color-base: transparent !important;
+    font-weight: bold;
+    backdrop-filter: blur(5px);
+  }
+
+  ion-title {
+    font-size: 1.5rem;
+  }
+}
+
+ion-content {
+  ion-item {
+    ion-label {
+      font-weight: bold;
+    }
+
+    ion-select {
+      max-width: 100%;
+    }
+
+    ion-input {
+      max-width: 100%;
+    }
+  }
+}

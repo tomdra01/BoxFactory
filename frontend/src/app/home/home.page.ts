@@ -12,62 +12,98 @@ import {environment} from "../../environments/environment";
       <ion-toolbar class="toolbar-content">
         <div class="toolbar-content">
           <div class="left-buttons">
-            <ion-button class="home-button" routerLink="/">Home</ion-button>
-            <ion-button class="add-button">ADD</ion-button>
+            <ion-button class="home-button" color="dark" routerLink="/">Home</ion-button>
+            <ion-button class="add-button" color="dark" [routerLink]="['/add']">ADD</ion-button>
           </div>
-          <ion-searchbar class="search-bar" placeholder="Search" (ionInput)="searchBox($event)"></ion-searchbar>
           <ion-buttons slot="end">
           </ion-buttons>
         </div>
       </ion-toolbar>
     </ion-header>
 
-    <ion-content>
-      <div class="cloud-element"></div>
+    <ion-content fullscreen="true">
       <div class="parent">
         <ion-grid class="grid">
-          <ion-button class="center-button" (click)="scrollToTarget()">See boxes</ion-button>
+          <ion-button class="center-button" color="dark" (click)="scrollToTarget()">See boxes</ion-button>
         </ion-grid>
       </div>
 
-      <div id="scrollTarget" class="page">
+      <!-- Line with cards for different box sizes -->
+      <div id="sizeCards" class="page">
         <ion-grid>
-          <ion-card class="narrow-card" *ngFor="let box of searchedBoxes">
-            <ion-toolbar>
-              <ion-card-header>Box Id: {{box.boxId}}</ion-card-header>
-              <ion-card-subtitle>Box price: {{box.price}}</ion-card-subtitle>
-              <ion-card-subtitle>Box size: {{box.size}}</ion-card-subtitle>
-              <ion-buttons slot="end">
-                <ion-button (click)="deleteBox(box.boxId)">
-                  <ion-icon name="trash"></ion-icon>
-                </ion-button>
-              </ion-buttons>
-            </ion-toolbar>
-          </ion-card>
+          <ion-row>
+            <ion-col *ngFor="let size of ['S', 'M', 'L', 'XL', 'XXL']">
+              <ion-card>
+                <ion-card-header>
+                  {{size}} Size
+                </ion-card-header>
+                <ion-card-subtitle>Stock: {{ getStockCount(size) }}</ion-card-subtitle>
+                <ion-card-subtitle>Average Price: {{ getAveragePrice(size) }}</ion-card-subtitle>
+                <ion-card-subtitle>Lowest Price: {{ getLowestPrice(size) }}</ion-card-subtitle>
+              </ion-card>
+            </ion-col>
+          </ion-row>
         </ion-grid>
       </div>
+
+      <div class="filter-section">
+        <ion-label *ngFor="let size of ['S', 'M', 'L', 'XL', 'XXL']">
+          <ion-checkbox [(ngModel)]="sizeFilters[size]" (ionChange)="applyFilter()"></ion-checkbox>
+          {{size}}
+        </ion-label>
+      </div>
+
+      <div id="scrollTarget" class="page">
+        <div class="grid-container">
+          <div class="grid-item" *ngFor="let box of filteredBoxes">
+            <ion-card>
+              <ion-toolbar>
+                <ion-card-header>Box Id: {{box.boxId}}</ion-card-header>
+                <ion-card-subtitle>Box price: {{box.price}}</ion-card-subtitle>
+                <ion-card-subtitle>Box size: {{box.size}}</ion-card-subtitle>
+                <ion-buttons slot="end">
+                  <ion-button (click)="deleteBox(box.boxId)">
+                    <ion-icon name="trash"></ion-icon>
+                  </ion-button>
+                  <ion-button [routerLink]="['/inspect', box.boxId]" *ngIf="box.boxId !== undefined">
+                    <ion-icon name="eye-outline"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              </ion-toolbar>
+            </ion-card>
+          </div>
+        </div>
+      </div>
     </ion-content>
+
   `,
   styleUrls: ['home.component.scss'],
 })
 
 export class HomePage implements OnInit {
-  public searchResult: Box | null = null;
-  public searchedBoxes: Box[] = [];
+  //filter
+  public sizeFilters: { [key: string]: boolean } = {
+    'S': true,
+    'M': true,
+    'L': true,
+    'XL': true,
+    'XXL': true
+  };
+  public filteredBoxes: Box[] = [];
+  public applyFilter(): void {
+    this.filteredBoxes = this.state.boxes.filter(box => box.size !== undefined && this.sizeFilters[box.size.toString() as keyof typeof this.sizeFilters]);
+  }
 
-  constructor(private http: HttpClient, private state: State) {}
-
+  constructor(private http: HttpClient, public state: State) {}
   async ngOnInit(): Promise<void> {
     await this.fetchBoxes();
-    this.searchedBoxes = [...this.state.boxes];
+    this.applyFilter();
   }
 
   async fetchBoxes(): Promise<void> {
     try {
       const boxes = await firstValueFrom(this.http.get<Box[]>(`${environment.baseUrl}/api/boxes`));
-      console.log('Fetched Boxes:', boxes);
       this.state.boxes = boxes;
-      console.log('State Boxes:', this.state.boxes);
     } catch (error) {
       console.error('Error fetching boxes:', error);
     }
@@ -88,29 +124,46 @@ export class HomePage implements OnInit {
 
     try {
       await firstValueFrom(this.http.delete(`${environment.baseUrl}/api/box/${boxId}`));
-      console.log(`Deleted box with ID: ${boxId}`);
-
       this.state.boxes = this.state.boxes.filter(box => box.boxId !== boxId);
     } catch (error) {
       console.error(`Error deleting box with ID ${boxId}:`, error);
     }
   }
 
-  async searchBox(event: Event): Promise<void> {
-    const target = event.target as HTMLInputElement;
-    if (target && target.value) {
-      const boxId = Number(target.value);
-      if (!Number.isNaN(boxId)) {
-        try {
-          const result = await firstValueFrom(this.http.get<Box>(`${environment.baseUrl}/api/box/${boxId}`));
-          this.searchedBoxes = [result];
-        } catch (error) {
-          console.info(`Error fetching box with ID ${boxId}:`, error);
-          this.searchedBoxes = [];
-        }
-      }
-    } else {
-      this.searchedBoxes = [...this.state.boxes];
-    }
+  viewBox(boxId: string) {
+    this.http.get(`${environment.baseUrl}/api/box/${boxId}`).subscribe({
+      next: (data: any) => {
+        // Process the received box data
+        console.log('Received box data:', data);
+      },
+      error: (error) => {
+        // Handle errors
+        console.error('An error occurred:', error);
+      },
+      complete: () => {
+        // Optional: Code to run once the Observable is complete
+        console.log('Request completed.');
+      },
+    });
+  }
+
+  getStockCount(size: string): number {
+    return this.state.boxes.filter(box => box.size?.toString() === size).length;
+  }
+
+  getAveragePrice(size: string): number | string {
+    const boxesOfSize = this.state.boxes.filter(box => box.size !== undefined && box.size.toString() === size && box.price !== undefined);
+    if (boxesOfSize.length === 0) return 'N/A';
+
+    const sum = boxesOfSize.reduce((acc, box) => acc + (box.price || 0), 0);  // box.price || 0 ensures it falls back to 0 if undefined
+    return (sum / boxesOfSize.length).toFixed(2);
+  }
+
+  getLowestPrice(size: string): number | string {
+    const boxesOfSize = this.state.boxes.filter(box => box.size !== undefined && box.size.toString() === size && box.price !== undefined);
+    if (boxesOfSize.length === 0) return 'N/A';
+
+    const lowest = Math.min(...boxesOfSize.map(box => box.price || Infinity));  // box.price || Infinity ensures it falls back to Infinity if undefined
+    return lowest.toFixed(2);
   }
 }
