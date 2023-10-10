@@ -46,9 +46,16 @@ import {environment} from "../../environments/environment";
         </ion-grid>
       </div>
 
+      <div class="filter-section">
+        <ion-label *ngFor="let size of ['S', 'M', 'L', 'XL', 'XXL']">
+          <ion-checkbox [(ngModel)]="sizeFilters[size]" (ionChange)="applyFilter()"></ion-checkbox>
+          {{size}}
+        </ion-label>
+      </div>
+
       <div id="scrollTarget" class="page">
         <div class="grid-container">
-          <div class="grid-item" *ngFor="let box of state.boxes">
+          <div class="grid-item" *ngFor="let box of filteredBoxes">
             <ion-card>
               <ion-toolbar>
                 <ion-card-header>Box Id: {{box.boxId}}</ion-card-header>
@@ -74,10 +81,23 @@ import {environment} from "../../environments/environment";
 })
 
 export class HomePage implements OnInit {
-  constructor(private http: HttpClient, public state: State) {}
+  //filter
+  public sizeFilters: { [key: string]: boolean } = {
+    'S': true,
+    'M': true,
+    'L': true,
+    'XL': true,
+    'XXL': true
+  };
+  public filteredBoxes: Box[] = [];
+  public applyFilter(): void {
+    this.filteredBoxes = this.state.boxes.filter(box => box.size !== undefined && this.sizeFilters[box.size.toString() as keyof typeof this.sizeFilters]);
+  }
 
+  constructor(private http: HttpClient, public state: State) {}
   async ngOnInit(): Promise<void> {
     await this.fetchBoxes();
+    this.applyFilter();
   }
 
   async fetchBoxes(): Promise<void> {
