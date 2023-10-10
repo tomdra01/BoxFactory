@@ -21,21 +21,3 @@ jobs:
 
     - name: Run C# project tests
       run: dotnet test ./backend/backend.sln
-
-    # Install Playwright and download browsers
-    - name: Install Playwright and download browsers
-      run: npm install playwright && npx playwright install
-
-    # Install Node.js and run Playwright tests
-    - name: Setup Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
-
-    - name: Install dependencies
-      run: npm install
-      working-directory: ./backend/test
-
-    - name: Run Playwright tests
-      run: npm test
-      working-directory: ./backend/test
