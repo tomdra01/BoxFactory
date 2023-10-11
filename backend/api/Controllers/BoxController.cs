@@ -7,9 +7,9 @@ namespace FullBackendTestProject.Controllers
     [ApiController]
     public class BoxController : ControllerBase
     {
-        private readonly Service.Service _service;
+        private readonly Service.IService _service;
 
-        public BoxController(Service.Service service)
+        public BoxController(IService service)
         {
             _service = service;
         }
@@ -19,6 +19,7 @@ namespace FullBackendTestProject.Controllers
         public IEnumerable<Box> GetBoxes()
         {
             return _service.GetAllBoxes();
+            
         }
         
         [HttpGet]
@@ -35,18 +36,35 @@ namespace FullBackendTestProject.Controllers
 
         [HttpPost]
         [Route("/api/box")]
-        public Box PostBox([FromBody] Box box)
+        public ActionResult<Box> PostBox([FromBody] Box box)
         {
+            if (box == null || string.IsNullOrEmpty(box.Size))
+            {
+                return BadRequest("Invalid input");
+            }
+
             Box b = new Box(box.Size, box.Price);
-            return _service.CreateBox(b);
+            return Ok(_service.CreateBox(b));
         }
 
         [HttpPut]
         [Route("/api/box/{boxId}")]
-        public Box UpdateBox([FromBody] Box box, [FromRoute] int boxId)
+        public ActionResult<Box> UpdateBox([FromBody] Box box, [FromRoute] int boxId)
         {
-            Box b = new Box(box.Size, box.Price);
-            return _service.UpdateBox(boxId, b);
+            if (box == null || !ModelState.IsValid)
+            {
+                return BadRequest("Invalid input");
+            }
+
+            Box updatedBox = new Box(box.Size, box.Price);
+            updatedBox = _service.UpdateBox(boxId, updatedBox);
+
+            if (updatedBox == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(updatedBox);
         }
 
         [HttpDelete]

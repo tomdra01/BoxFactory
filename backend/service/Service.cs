@@ -6,7 +6,7 @@ using Infrastructure.DataModels;
 
 namespace Service
 {
-    public class Service
+    public class Service : IService
     {
         private readonly Repository _repository;
 
@@ -14,6 +14,9 @@ namespace Service
         {
             _repository = repository;
         }
+        
+        public Service()
+        {}
 
         public IEnumerable<Box> GetAllBoxes()
         {
@@ -61,7 +64,7 @@ namespace Service
 
         private static bool IsValidSize(string size)
         {
-            var validSizes = new List<string> { "S", "M", "L", "XL", "XXL" };
+            var validSizes = new List<string> { "S", "M", "L", "XL"};
             return validSizes.Contains(size);
         }
 
