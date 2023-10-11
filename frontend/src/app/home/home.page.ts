@@ -148,6 +148,9 @@ export class HomePage implements OnInit {
       await firstValueFrom(this.http.delete(`${environment.baseUrl}/api/box/${boxId}`));
       this.state.boxes = this.state.boxes.filter(box => box.boxId !== boxId);
 
+      // Update the filtered list
+      this.applyFilter();
+
       await toast.present();
     } catch (error) {
       console.error(`Error deleting box with ID ${boxId}:`, error);
