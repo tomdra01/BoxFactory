@@ -6,37 +6,38 @@ import {environment} from "../../environments/environment";
 @Component({
   selector: 'app-inspect-box',
   template: `
-    <ion-card>
-      <ion-toolbar>
-        <ion-card-header>
-          <ion-input *ngIf="editing" [(ngModel)]="box.boxId"></ion-input>
-          <span *ngIf="!editing">Box Id: {{ box?.boxId }}</span>
-        </ion-card-header>
-        <ion-card-subtitle>
-          <ion-input *ngIf="editing" [(ngModel)]="box.price"></ion-input>
-          <span *ngIf="!editing">Box Price: {{ box?.price }}</span>
-        </ion-card-subtitle>
-        <ion-card-subtitle>
-          <ion-select *ngIf="editing" [(ngModel)]="box.size">
-            <ion-select-option *ngFor="let size of boxSizes" [value]="size">{{ size }}</ion-select-option>
-          </ion-select>
-          <span *ngIf="!editing">Box Size: {{ box?.size }}</span>
-        </ion-card-subtitle>
-        <ion-buttons slot="end">
-          <ion-button *ngIf="!editing" (click)="toggleEditing()">
-            <ion-icon name="pencil-outline"></ion-icon>
-          </ion-button>
-          <ion-button *ngIf="editing" (click)="confirmChanges()">
-            <ion-icon name="download-outline"></ion-icon>
-          </ion-button>
-          <ion-button *ngIf="editing" (click)="cancelChanges()">
-            <ion-icon name="exit-outline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-      <img class="box-image" *ngIf="box?.size" [src]="getImagePath()" alt="Box Image">
-    </ion-card>
-
+    <ion-content class="background">
+      <ion-card>
+        <ion-toolbar>
+          <ion-card-header>
+            <ion-input *ngIf="editing" [(ngModel)]="box.boxId"></ion-input>
+            <span *ngIf="!editing">Box Id: {{ box?.boxId }}</span>
+          </ion-card-header>
+          <ion-card-subtitle>
+            <ion-input *ngIf="editing" [(ngModel)]="box.price"></ion-input>
+            <span *ngIf="!editing">Box Price: {{ box?.price }}</span>
+          </ion-card-subtitle>
+          <ion-card-subtitle>
+            <ion-select *ngIf="editing" [(ngModel)]="box.size">
+              <ion-select-option *ngFor="let size of boxSizes" [value]="size">{{ size }}</ion-select-option>
+            </ion-select>
+            <span *ngIf="!editing">Box Size: {{ box?.size }}</span>
+          </ion-card-subtitle>
+          <ion-buttons slot="end">
+            <ion-button *ngIf="!editing" (click)="toggleEditing()">
+              <ion-icon name="pencil-outline"></ion-icon>
+            </ion-button>
+            <ion-button *ngIf="editing" (click)="confirmChanges()">
+              <ion-icon name="download-outline"></ion-icon>
+            </ion-button>
+            <ion-button *ngIf="editing" (click)="cancelChanges()">
+              <ion-icon name="exit-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+        <img class="box-image" *ngIf="box?.size" [src]="getImagePath()" alt="Box Image">
+      </ion-card>
+    </ion-content>
   `,
   styleUrls: ['inspect-box.component.scss']
 })
