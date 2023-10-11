@@ -1,6 +1,6 @@
 namespace test;
 
-public class Tests
+public class PlaywrightTests
 {
     private IPlaywright _playwright;
     private IBrowser _browser;

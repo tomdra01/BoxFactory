@@ -80,5 +80,22 @@ ion-checkbox {
 }
 
 .box-image {
-  margin-top: 20px;
+  margin-top: 25px;
 }
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.grid-item {
+  ion-card {
+    transition: transform 0.2s;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+}
+

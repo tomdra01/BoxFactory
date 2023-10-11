@@ -4,6 +4,7 @@ import {State} from "../../state";
 import {firstValueFrom} from "rxjs";
 import {Box} from "../../models";
 import {environment} from "../../environments/environment";
+import {ToastController} from "@ionic/angular";
 
 @Component({
   selector: 'app-add-box',
@@ -16,7 +17,7 @@ import {environment} from "../../environments/environment";
       </ion-toolbar>
     </ion-header>
 
-    <ion-content fullscreen="true" color="light">
+    <ion-content class="background">
       <ion-item>
         <ion-label>Box Size:</ion-label>
         <ion-select [(ngModel)]="selectedSize">
@@ -29,18 +30,18 @@ import {environment} from "../../environments/environment";
         <ion-input type="number" [(ngModel)]="price"></ion-input>
       </ion-item>
 
-      <ion-button expand="full" color="dark" (click)="addBox()">Add</ion-button>
+      <ion-button expand="full" color="dark" (click)="addBox()" [routerLink]="['/home']">Add</ion-button>
     </ion-content>
   `,
   styleUrls: ['./add-box.component.scss'],
 })
 
 export class AddBoxComponent {
-  boxSizes: string[] = ['S', 'M', 'L', 'XL', 'XXL'];
+  boxSizes: string[] = ['S', 'M', 'L', 'XL'];
   selectedSize: string = 'M';
   price: number | null = null;
 
-  constructor(private http: HttpClient, public state: State) {}
+  constructor(private http: HttpClient, public state: State, private toastController: ToastController) {}
 
   async addBox(): Promise<void> {
     if (this.validateData()) {
@@ -59,6 +60,13 @@ export class AddBoxComponent {
 
         this.selectedSize = 'M';
         this.price = null;
+
+        const toast = await this.toastController.create({
+          message: 'Box added successfully',
+          duration: 2000,
+        });
+
+        toast.present;
       } catch (error) {
         console.error('Error adding box:', error);
       }

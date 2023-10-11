@@ -4,6 +4,7 @@ import {HttpClient} from "@angular/common/http";
 import {firstValueFrom} from "rxjs";
 import {Box} from "../../models";
 import {environment} from "../../environments/environment";
+import {ToastController} from "@ionic/angular";
 
 @Component({
   selector: 'app-home',
@@ -12,7 +13,7 @@ import {environment} from "../../environments/environment";
       <ion-toolbar class="toolbar-content">
         <div class="toolbar-content">
           <div class="left-buttons">
-            <ion-button class="home-button" color="dark" routerLink="/">Home</ion-button>
+            <ion-button class="home-button" color="dark" (click)="refreshPage()" routerLink="/">Home</ion-button>
             <ion-button class="add-button" color="dark" [routerLink]="['/add']">ADD</ion-button>
           </div>
           <ion-buttons slot="end">
@@ -55,7 +56,7 @@ import {environment} from "../../environments/environment";
       </div>
 
       <div class="filter-section">
-        <ion-label *ngFor="let size of ['S', 'M', 'L', 'XL', 'XXL']">
+        <ion-label *ngFor="let size of ['S', 'M', 'L', 'XL']">
           <ion-checkbox [(ngModel)]="sizeFilters[size]" (ionChange)="applyFilter()"></ion-checkbox>
           {{size}}
         </ion-label>
@@ -89,6 +90,11 @@ import {environment} from "../../environments/environment";
 })
 
 export class HomePage implements OnInit {
+
+  public filteredBoxes: Box[] = [];
+
+  currentImageIndex: number = 0;
+
   public sizeFilters: { [key: string]: boolean } = {
     'S': true,
     'M': true,
@@ -97,15 +103,7 @@ export class HomePage implements OnInit {
     'XXL': true
   };
 
-  public filteredBoxes: Box[] = [];
-
-  currentImageIndex: number = 0;
-
-  public applyFilter(): void {
-    this.filteredBoxes = this.state.boxes.filter(box => box.size !== undefined && this.sizeFilters[box.size.toString() as keyof typeof this.sizeFilters]);
-  }
-
-  constructor(private http: HttpClient, public state: State) {}
+  constructor(private http: HttpClient, public state: State, private toastController: ToastController) {}
 
   async ngOnInit(): Promise<void> {
     await this.fetchBoxes();
@@ -118,11 +116,14 @@ export class HomePage implements OnInit {
 
   async fetchBoxes(): Promise<void> {
     try {
-      const boxes = await firstValueFrom(this.http.get<Box[]>(`${environment.baseUrl}/api/boxes`));
-      this.state.boxes = boxes;
+      this.state.boxes = await firstValueFrom(this.http.get<Box[]>(`${environment.baseUrl}/api/boxes`));
     } catch (error) {
       console.error('Error fetching boxes:', error);
     }
+  }
+
+  public applyFilter(): void {
+    this.filteredBoxes = this.state.boxes.filter(box => box.size !== undefined && this.sizeFilters[box.size.toString() as keyof typeof this.sizeFilters]);
   }
 
   scrollToTarget(): void {
@@ -138,9 +139,16 @@ export class HomePage implements OnInit {
       return;
     }
 
+    const toast = await this.toastController.create({
+      message: 'Box' + ' ' + boxId + ' ' + 'deleted successfully',
+      duration: 2000,
+    });
+
     try {
       await firstValueFrom(this.http.delete(`${environment.baseUrl}/api/box/${boxId}`));
       this.state.boxes = this.state.boxes.filter(box => box.boxId !== boxId);
+
+      await toast.present();
     } catch (error) {
       console.error(`Error deleting box with ID ${boxId}:`, error);
     }
@@ -149,15 +157,12 @@ export class HomePage implements OnInit {
   viewBox(boxId: string) {
     this.http.get(`${environment.baseUrl}/api/box/${boxId}`).subscribe({
       next: (data: any) => {
-        // Process the received box data
         console.log('Received box data:', data);
       },
       error: (error) => {
-        // Handle errors
         console.error('An error occurred:', error);
       },
       complete: () => {
-        // Optional: Code to run once the Observable is complete
         console.log('Request completed.');
       },
     });
@@ -202,5 +207,9 @@ export class HomePage implements OnInit {
     const mappings = isRightImage ? sizeMappings : leftImageMappings;
 
     return `/assets/images/boxes/${mappings[size] || ''}`;
+  }
+
+  refreshPage() {
+    location.reload();
   }
 }
