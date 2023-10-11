@@ -97,7 +97,6 @@ export class InspectBoxComponent implements OnInit {
   }
 
   cancelChanges(): void {
-    // TODO: Implement code to revert changes, if needed
     this.editing = false;
   }
 }

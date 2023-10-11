@@ -2,9 +2,9 @@ using Infrastructure.DataModels;
 using Microsoft.AspNetCore.Mvc;
 using Service; 
 
-namespace FullBackendTestProject.Controllers
-{
-    [ApiController]
+namespace api.Controllers;
+
+[ApiController]
     public class BoxController : ControllerBase
     {
         private readonly Service.IService _service;
@@ -74,4 +74,3 @@ namespace FullBackendTestProject.Controllers
             return _service.DeleteBox(boxId);
         }
     }
-}

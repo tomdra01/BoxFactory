@@ -4,6 +4,7 @@ import {HttpClient} from "@angular/common/http";
 import {firstValueFrom} from "rxjs";
 import {Box} from "../../models";
 import {environment} from "../../environments/environment";
+import {ToastController} from "@ionic/angular";
 
 @Component({
   selector: 'app-home',
@@ -102,7 +103,7 @@ export class HomePage implements OnInit {
     'XXL': true
   };
 
-  constructor(private http: HttpClient, public state: State) {}
+  constructor(private http: HttpClient, public state: State, private toastController: ToastController) {}
 
   async ngOnInit(): Promise<void> {
     await this.fetchBoxes();
@@ -115,8 +116,7 @@ export class HomePage implements OnInit {
 
   async fetchBoxes(): Promise<void> {
     try {
-      const boxes = await firstValueFrom(this.http.get<Box[]>(`${environment.baseUrl}/api/boxes`));
-      this.state.boxes = boxes;
+      this.state.boxes = await firstValueFrom(this.http.get<Box[]>(`${environment.baseUrl}/api/boxes`));
     } catch (error) {
       console.error('Error fetching boxes:', error);
     }
@@ -139,9 +139,16 @@ export class HomePage implements OnInit {
       return;
     }
 
+    const toast = await this.toastController.create({
+      message: 'Box' + ' ' + boxId + ' ' + 'deleted successfully',
+      duration: 2000,
+    });
+
     try {
       await firstValueFrom(this.http.delete(`${environment.baseUrl}/api/box/${boxId}`));
       this.state.boxes = this.state.boxes.filter(box => box.boxId !== boxId);
+
+      await toast.present();
     } catch (error) {
       console.error(`Error deleting box with ID ${boxId}:`, error);
     }
