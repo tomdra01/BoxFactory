@@ -16,7 +16,7 @@ import {environment} from "../../environments/environment";
       </ion-toolbar>
     </ion-header>
 
-    <ion-content fullscreen="true" color="light">
+    <ion-content class="background">
       <ion-item>
         <ion-label>Box Size:</ion-label>
         <ion-select [(ngModel)]="selectedSize">
