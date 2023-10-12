@@ -44,7 +44,7 @@ import {environment} from "../../environments/environment";
 export class InspectBoxComponent implements OnInit {
   box: any;
   editing: boolean = false;
-  boxSizes: string[] = ['S', 'M', 'L', 'XL', 'XXL'];
+  boxSizes: string[] = ['S', 'M', 'L', 'XL'];
 
   constructor(private route: ActivatedRoute, private http: HttpClient) { }
 
@@ -68,9 +68,8 @@ export class InspectBoxComponent implements OnInit {
 
   getImagePath(): string {
     if (!this.box?.size) return '';
-    const size = this.box.size.toString(); // Convert to string if it's not
-    const mappings: { [key: string]: string } = { // Explicitly define type
-      'XXL': 'boxImgBig.png',
+    const size = this.box.size.toString();
+    const mappings: { [key: string]: string } = {
       'XL': 'boxImgBig.png',
       'L': 'boxImgLarge.jpg',
       'M': 'boxImgMedium.jpg',
@@ -87,7 +86,7 @@ export class InspectBoxComponent implements OnInit {
     const boxId = this.box.boxId;
     this.http.put(`${environment.baseUrl}/api/box/${boxId}`, this.box).subscribe({
       next: (updatedBox: any) => {
-        this.box = updatedBox;  // Update the local box object with the updated one
+        this.box = updatedBox;
         this.editing = false;
       },
       error: (error) => {
