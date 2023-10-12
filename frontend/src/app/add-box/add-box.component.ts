@@ -5,6 +5,7 @@ import {firstValueFrom} from "rxjs";
 import {Box} from "../../models";
 import {environment} from "../../environments/environment";
 import {ToastController} from "@ionic/angular";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-add-box',
@@ -30,7 +31,7 @@ import {ToastController} from "@ionic/angular";
         <ion-input type="number" [(ngModel)]="price"></ion-input>
       </ion-item>
 
-      <ion-button expand="full" color="dark" (click)="addBox()" [routerLink]="['/home']">Add</ion-button>
+      <ion-button expand="full" color="dark" (click)="addBox()">Add</ion-button>
     </ion-content>
   `,
   styleUrls: ['./add-box.component.scss'],
@@ -41,7 +42,7 @@ export class AddBoxComponent {
   selectedSize: string = 'M';
   price: number | null = null;
 
-  constructor(private http: HttpClient, public state: State, private toastController: ToastController) {}
+  constructor(private http: HttpClient, private router: Router, public state: State, private toastController: ToastController) {}
 
   async addBox(): Promise<void> {
     if (this.validateData()) {
@@ -67,6 +68,7 @@ export class AddBoxComponent {
         });
 
         toast.present;
+        this.router.navigate(['/home']);
       } catch (error) {
         console.error('Error adding box:', error);
       }

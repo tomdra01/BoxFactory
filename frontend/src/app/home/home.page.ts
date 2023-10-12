@@ -32,11 +32,11 @@ import {ToastController} from "@ionic/angular";
       <div id="sizeCards" class="page">
         <ion-grid>
           <ion-row>
-            <ion-col *ngFor="let size of ['S', 'M', 'L', 'XL']">
+            <ion-col size="12" size-md="6" size-lg="4" size-xl="3" *ngFor="let size of ['S', 'M', 'L', 'XL']">
               <ion-card>
                 <ion-card-content>
                   <ion-row>
-                    <ion-col class="card-content-left" size="9">
+                    <ion-col class="card-content-left">
                       <ion-card-header>
                         {{ size }} Size
                       </ion-card-header>
@@ -100,7 +100,6 @@ export class HomePage implements OnInit {
     'M': true,
     'L': true,
     'XL': true,
-    'XXL': true
   };
 
   constructor(private http: HttpClient, public state: State, private toastController: ToastController) {}
@@ -122,17 +121,6 @@ export class HomePage implements OnInit {
     }
   }
 
-  public applyFilter(): void {
-    this.filteredBoxes = this.state.boxes.filter(box => box.size !== undefined && this.sizeFilters[box.size.toString() as keyof typeof this.sizeFilters]);
-  }
-
-  scrollToTarget(): void {
-    const targetElement = document.getElementById('scrollTarget');
-    if (targetElement) {
-      targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }
-
   async deleteBox(boxId?: number): Promise<void> {
     if (boxId === undefined) {
       console.error('Cannot delete box with undefined ID');
@@ -148,24 +136,27 @@ export class HomePage implements OnInit {
       await firstValueFrom(this.http.delete(`${environment.baseUrl}/api/box/${boxId}`));
       this.state.boxes = this.state.boxes.filter(box => box.boxId !== boxId);
 
+      this.applyFilter();
+
       await toast.present();
     } catch (error) {
       console.error(`Error deleting box with ID ${boxId}:`, error);
     }
   }
 
-  viewBox(boxId: string) {
-    this.http.get(`${environment.baseUrl}/api/box/${boxId}`).subscribe({
-      next: (data: any) => {
-        console.log('Received box data:', data);
-      },
-      error: (error) => {
-        console.error('An error occurred:', error);
-      },
-      complete: () => {
-        console.log('Request completed.');
-      },
-    });
+  refreshPage() {
+    location.reload();
+  }
+
+  public applyFilter(): void {
+    this.filteredBoxes = this.state.boxes.filter(box => box.size !== undefined && this.sizeFilters[box.size.toString() as keyof typeof this.sizeFilters]);
+  }
+
+  scrollToTarget(): void {
+    const targetElement = document.getElementById('scrollTarget');
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   getStockCount(size: string): number {
@@ -207,9 +198,5 @@ export class HomePage implements OnInit {
     const mappings = isRightImage ? sizeMappings : leftImageMappings;
 
     return `/assets/images/boxes/${mappings[size] || ''}`;
-  }
-
-  refreshPage() {
-    location.reload();
   }
 }
