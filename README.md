@@ -1,6 +1,6 @@
 # Box factory website
 
-<img width="1128" alt="screen" src="https://github.com/tomdra01/BoxFactory/assets/114875545/5982f654-b390-4c95-a1fc-7e5f874632c7">
+<img width="1128" alt="screen" src="https://github.com/tomdra01/BoxFactory/assets/114875545/1a36d263-c624-4d3c-a8d5-45c75c8f64db">
 
 ## Authors
 
